@@ -20,7 +20,14 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-
+  //config cors
+  app.enableCors(
+    {
+      "origin": "*",
+      "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      "preflightContinue": false
+    }
+  );
   await app.listen(configService.get('PORT'));
 }
 bootstrap();
