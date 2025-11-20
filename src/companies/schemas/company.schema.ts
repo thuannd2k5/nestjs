@@ -6,13 +6,13 @@ export type CompanyDocument = HydratedDocument<Company>;
 
 @Schema({ timestamps: true })
 export class Company {
-    @Prop()
+    @Prop({ required: true })
     name: string;
 
-    @Prop()
+    @Prop({ required: true })
     address: string;
 
-    @Prop()
+    @Prop({ required: true })
     description: string;
 
     @Prop({ type: Object })
