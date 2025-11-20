@@ -24,11 +24,6 @@ export class User {
     @Prop()
     address: string;
 
-    @Prop()
-    createAt: Date;
-
-    @Prop()
-    updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
