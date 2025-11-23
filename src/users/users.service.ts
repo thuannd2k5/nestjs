@@ -97,9 +97,16 @@ export class UsersService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, @User() user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id))
       return 'not found user'
+
+    await this.userModel.updateOne({ _id: id }, {
+      deletedBy: {
+        _id: user._id,
+        email: user.email
+      }
+    })
 
     return await this.userModel.softDelete({ _id: id });
   }
