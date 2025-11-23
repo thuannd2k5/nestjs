@@ -76,7 +76,7 @@ export class UsersService {
     if (!mongoose.Types.ObjectId.isValid(id))
       return 'not found user'
 
-    return this.userModel.findOne({ _id: id });
+    return this.userModel.findOne({ _id: id }).select('-password');
   }
 
   findOneByUsername(username: string) {
