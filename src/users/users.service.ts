@@ -2,17 +2,19 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.schema';
-import mongoose, { Model } from 'mongoose';
+import { User as UserM, UserDocument } from './schemas/user.schema';
+import mongoose from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from './users.interface';
+import { User } from 'src/decorator/customize';
 
 
 @Injectable()
 export class UsersService {
 
   constructor(
-    @InjectModel(User.name)
+    @InjectModel(UserM.name)
     private userModel: SoftDeleteModel<UserDocument>
   ) { }
 
@@ -22,14 +24,29 @@ export class UsersService {
     return hash;
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const hashPassword = this.getHashPassword(createUserDto.password);
-    let user = await this.userModel.create({
-      email: createUserDto.email,
+  async create(createUserDto: CreateUserDto, @User() user: IUser) {
+    const { name, email, password, age, gender, address, role, company } = createUserDto;
+    const hashPassword = this.getHashPassword(password);
+    const isExist = await this.userModel.findOne({ email });
+    if (isExist) {
+      throw new BadRequestException(`Email ${email} da ton tai tren he thong. Vui long su dung email khac!`);
+    }
+    let newUser = await this.userModel.create({
+      name,
+      email,
       password: hashPassword,
-      name: createUserDto.name
+      age,
+      gender,
+      address,
+      role,
+      company,
+      createdBy: {
+        _id: user._id,
+        email: user.email
+      }
     })
-    return user;
+
+    return newUser;
   }
 
   async register(user: RegisterUserDto) {
