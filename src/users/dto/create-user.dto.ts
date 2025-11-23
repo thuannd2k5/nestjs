@@ -19,7 +19,7 @@ export class CreateUserDto {
     @IsNotEmpty({ message: "Email should not be empty" })
     email: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "Password should not be empty" })
     password: string;
 
     @IsNotEmpty({ message: "Name should not be empty" })
@@ -50,7 +50,7 @@ export class RegisterUserDto {
     @IsNotEmpty({ message: "Email should not be empty" })
     email: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty({ message: "Password should not be empty" })
     password: string;
 
     @IsNotEmpty({ message: "Name should not be empty" })

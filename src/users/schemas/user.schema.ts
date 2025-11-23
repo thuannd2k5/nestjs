@@ -19,7 +19,7 @@ export class User {
     age: number;
 
     @Prop()
-    gender: number;
+    gender: string;
 
     @Prop()
     address: string;
@@ -54,6 +54,8 @@ export class User {
         email: string
     };
 
+    @Prop()
+    createdAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
