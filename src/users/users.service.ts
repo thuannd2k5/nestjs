@@ -87,8 +87,14 @@ export class UsersService {
     return compareSync(password, hash);
   }
 
-  async update(updateUserDto: UpdateUserDto) {
-    return await this.userModel.updateOne({ _id: updateUserDto._id }, { ...updateUserDto });
+  async update(updateUserDto: UpdateUserDto, @User() user: IUser) {
+    return await this.userModel.updateOne({ _id: updateUserDto._id }, {
+      ...updateUserDto,
+      updatedBy: {
+        _id: user._id,
+        email: user.email
+      }
+    });
   }
 
   async remove(id: string) {
