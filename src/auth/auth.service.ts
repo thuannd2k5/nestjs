@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUser } from 'src/users/users.interface';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import ms from 'ms';
+const ms = require('ms');
+
+
+
 
 @Injectable()
 export class AuthService {
@@ -40,15 +43,15 @@ export class AuthService {
 
         const refresh_token = this.createRefreshToken(payload);
 
+
         //update user with refresh token  
         await this.usersService.updateUserToken(refresh_token, _id);
 
         //set refresh token in cookie
         response.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            maxAge: this.configService.get('JWT_REFRESH_EXPIRE')
+            maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')) * 1000,
         })
-
         return {
             access_token: this.jwtService.sign(payload),
             user: {
@@ -76,6 +79,19 @@ export class AuthService {
             secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
             expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE')
         });
+
         return refresh_token;
+    }
+
+    processNewToken = (refresh_token: string) => {
+        try {
+            let a = this.jwtService.verify(refresh_token, {
+                secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
+            })
+            console.log(a);
+            //todo
+        } catch (error) {
+            throw new BadRequestException(`Refresh Token khong hop le. Vui long dang nhap lai!`);
+        }
     }
 }

@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { Public, ResponseMessage, User } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { IUser } from 'src/users/users.interface';
 
 
@@ -34,6 +34,14 @@ export class AuthController {
     @ResponseMessage('Get user information')
     getAccount(@User() user: IUser) {
         return { user };
+    }
+
+    @Public()
+    @Get('/refresh')
+    @ResponseMessage('Get user by refresh token')
+    getRefreshToken(@Req() request: Request) {
+        const refresh_token = request.cookies['refresh_token'];
+        return this.authService.processNewToken(refresh_token);
     }
 
 }
