@@ -10,7 +10,7 @@ export class Job {
     name: string;
 
     @Prop()
-    Skills: string[];
+    skills: string[];
 
     @Prop({ type: Object })
     company: {

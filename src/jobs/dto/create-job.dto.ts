@@ -15,8 +15,8 @@ export class CreateJobDto {
     name: string;
 
     @IsArray({ message: "skills có định dạng là array" })
-    @IsString({ message: "skills định dạng là string" })
-    @IsNotEmpty({ each: true, message: "skills is not empty" })
+    @IsString({ each: true, message: "skills định dạng là string" })
+    @IsNotEmpty({ message: "skills is not empty" })
     skills: string[];
 
     @IsNotEmptyObject()
