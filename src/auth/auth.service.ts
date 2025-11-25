@@ -47,10 +47,12 @@ export class AuthService {
         //update user with refresh token  
         await this.usersService.updateUserToken(refresh_token, _id);
 
+        //delete cookie trước khi gán lại
+        response.clearCookie("refresh_token")
         //set refresh token in cookie
         response.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')) * 1000,
+            maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
         })
         return {
             access_token: this.jwtService.sign(payload),
@@ -83,13 +85,49 @@ export class AuthService {
         return refresh_token;
     }
 
-    processNewToken = (refresh_token: string) => {
+    processNewToken = async (refresh_token: string, response: Response) => {
         try {
-            let a = this.jwtService.verify(refresh_token, {
+            this.jwtService.verify(refresh_token, {
                 secret: this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
             })
-            console.log(a);
             //todo
+
+            let user = await this.usersService.findUserByToken(refresh_token);
+            if (user) {
+                const { _id, name, email, role } = user;
+                const payload = {
+                    sub: "token refresh",
+                    iss: "from server",
+                    _id,
+                    name,
+                    email,
+                    role
+                };
+
+                const refresh_token = this.createRefreshToken(payload);
+
+                //update user with refresh token  
+                await this.usersService.updateUserToken(refresh_token, _id.toString());
+
+                //delete cookie trước khi gán lại
+                response.clearCookie("refresh_token")
+                //set refresh token in cookie
+                response.cookie('refresh_token', refresh_token, {
+                    httpOnly: true,
+                    maxAge: ms(this.configService.get<string>('JWT_REFRESH_EXPIRE')),
+                })
+                return {
+                    access_token: this.jwtService.sign(payload),
+                    user: {
+                        _id,
+                        name,
+                        email,
+                        role
+                    }
+                };
+            } else {
+                throw new BadRequestException(`Refresh Token khong hop le. Vui long dang nhap lai!`);
+            }
         } catch (error) {
             throw new BadRequestException(`Refresh Token khong hop le. Vui long dang nhap lai!`);
         }
