@@ -132,4 +132,12 @@ export class AuthService {
             throw new BadRequestException(`Refresh Token khong hop le. Vui long dang nhap lai!`);
         }
     }
+
+
+
+    logout = async (user: IUser, response: Response) => {
+        await this.usersService.updateUserToken("", user._id);
+        response.clearCookie("refresh_token");
+        return "ok"
+    }
 }
