@@ -15,6 +15,9 @@ export class Company {
     @Prop({ required: true })
     description: string;
 
+    @Prop({ required: true })
+    logo: string;
+
     @Prop({ type: Object })
     createdBy: {
         _id: mongoose.Schema.Types.ObjectId,

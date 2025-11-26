@@ -10,6 +10,7 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) { }
 
   @Post()
+  @ResponseMessage("Create a company")
   create(@Body() createCompanyDto: CreateCompanyDto, @User() user: IUser) {
     return this.companiesService.create(createCompanyDto, user);
   }
@@ -30,6 +31,7 @@ export class CompaniesController {
   }
 
   @Patch(':id')
+  @ResponseMessage("Update a company")
   update(
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
@@ -39,6 +41,7 @@ export class CompaniesController {
   }
 
   @Delete(':id')
+  @ResponseMessage("Delete a company")
   remove(
     @Param('id') id: string,
     @User() user: IUser  //req.user
