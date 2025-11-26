@@ -7,6 +7,9 @@ class Company {
 
     @IsNotEmpty({ message: "Company's name is not empty" })
     name: string
+
+    @IsNotEmpty({ message: "Company's logo is not empty" })
+    logo: string
 }
 
 
