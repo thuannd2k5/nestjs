@@ -1,5 +1,4 @@
-import { Type } from "class-transformer";
-import { IsArray, IsMongoId, IsNotEmpty, IsObject, ValidateNested } from "class-validator";
+import { IsMongoId, IsNotEmpty } from "class-validator";
 import mongoose from "mongoose";
 
 
