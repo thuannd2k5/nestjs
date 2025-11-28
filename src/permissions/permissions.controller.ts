@@ -31,22 +31,22 @@ export class PermissionsController {
 
   @Get(':id')
   @ResponseMessage("Fetch Permission by ID")
-  findOne(@Param('id') id: string) {
-    return this.permissionsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.permissionsService.findOne(id);
   }
 
   @Patch(':id')
   @ResponseMessage("Update a permission")
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
     @User() user: IUser) {
-    return this.permissionsService.update(id, updatePermissionDto, user);
+    return await this.permissionsService.update(id, updatePermissionDto, user);
   }
 
   @Delete(':id')
   @ResponseMessage("Delete a permission")
-  remove(@Param('id') id: string, @User() user: IUser) {
-    return this.permissionsService.remove(id, user);
+  async remove(@Param('id') id: string, @User() user: IUser) {
+    return await this.permissionsService.remove(id, user);
   }
 }
