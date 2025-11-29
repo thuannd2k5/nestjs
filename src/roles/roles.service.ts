@@ -67,18 +67,21 @@ export class RolesService {
       throw new BadRequestException("Role này khong duoc tim thay")
     }
     return (await this.roleModel.findById({ _id: id }))
-      .populate({ path: "permissions", select: { _id: 1, apiPath: 1, name: 1, method: 1 } })
+      .populate({
+        path: "permissions",
+        select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 }
+      })
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto, @User() user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException("Role này khong duoc tim thay")
     }
-    const { name } = updateRoleDto;
-    const isExist = await this.roleModel.findOne({ name });
-    if (isExist) {
-      throw new BadRequestException(`Name ${name} đã tồn tại , vui lòng nhập name khác`)
-    }
+    // const { name } = updateRoleDto;
+    // const isExist = await this.roleModel.findOne({ name });
+    // if (isExist) {
+    //   throw new BadRequestException(`Name ${name} đã tồn tại , vui lòng nhập name khác`)
+    // }
     return await this.roleModel.updateOne({ _id: id }, {
       ...updateRoleDto,
       updatedBy: {
@@ -92,6 +95,11 @@ export class RolesService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException("Role này khong duoc tim thay")
     }
+    const foundRole = await this.roleModel.findById({ _id: id });
+    if (foundRole.name === "ADMIN") {
+      throw new BadRequestException("Không thể xóa role ADMIN")
+    }
+
     await this.roleModel.updateOne({ _id: id }, {
       deletedBy: {
         _id: user._id,
