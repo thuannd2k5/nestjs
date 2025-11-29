@@ -109,7 +109,7 @@ export class UsersService {
 
   async findOneByUsername(username: string) {
     return await this.userModel.findOne({ email: username })
-      .populate({ path: "role", select: { name: 1, permission: 1 } });
+      .populate({ path: "role", select: { name: 1, permissions: 1 } });
   }
 
   isValidPassword(password: string, hash: string) {
