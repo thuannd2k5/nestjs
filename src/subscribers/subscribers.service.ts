@@ -76,17 +76,18 @@ export class SubscribersService {
   }
 
 
-  async update(id: string, updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException("Not found subscriber")
-    }
-    return await this.subscriberModel.updateOne({ _id: id }, {
+  async update(updateSubscriberDto: UpdateSubscriberDto, user: IUser) {
+    const updated = await this.subscriberModel.updateOne({ email: user.email }, {
       ...updateSubscriberDto,
       updatedBy: {
         _id: user._id,
         email: user.email
-      }
+      },
+    }, {
+      upsert: true
     })
+
+    return updated;
   }
 
   async remove(id: string, user: IUser) {
@@ -101,4 +102,12 @@ export class SubscribersService {
     })
     return await this.subscriberModel.softDelete({ _id: id });
   }
+
+  async getSkills(user: IUser) {
+    const { email } = user;
+    return await this.subscriberModel.findOne({ email }).select({ skills: 1 });
+  }
+
 }
+
+
