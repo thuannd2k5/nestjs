@@ -23,6 +23,7 @@ export class MailController {
 
   @Get()
   @Public()
+  @Cron("0 0 0 * * 0")
   @ResponseMessage("Test email")
   async handleTestEmail() {
 
@@ -56,8 +57,4 @@ export class MailController {
 
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
-  handleCron() {
-    console.log('Called every 30 seconds');
-  }
 }
