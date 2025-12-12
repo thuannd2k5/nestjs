@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { ResumesService } from './resumes.service';
 import { CreateUserCvDto } from './dto/create-resume.dto';
 import { UpdateResumeDto } from './dto/update-resume.dto';
-import { ResponseMessage, User } from 'src/decorator/customize';
+import { ResponseMessage, SkipCheckPermission, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
 @Controller('resumes')
@@ -10,6 +10,7 @@ export class ResumesController {
   constructor(private readonly resumesService: ResumesService) { }
 
   @Post()
+  @SkipCheckPermission()
   @ResponseMessage("Create a new resume")
   async create(@Body() createUserCvDto: CreateUserCvDto, @User() user: IUser) {
     const cv = await this.resumesService.create(createUserCvDto, user);
