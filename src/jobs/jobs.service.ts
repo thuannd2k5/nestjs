@@ -27,10 +27,20 @@ export class JobsService {
     ;
   }
 
-  async findAll(currentPage: number, limit: number, qs: string) {
+  async findAll(currentPage: number, limit: number, qs: string, user: IUser) {
     const { filter, sort, population } = aqp(qs);
     delete filter.current;
     delete filter.pageSize;
+
+    const roleId = user?.role?._id?.toString();
+
+    if (roleId !== '692b0ac190e5227ad63aa1c9') {
+      delete filter['company._id'];
+    }
+    // HR → chỉ thấy job công ty mình
+    if (roleId === '692b0ac190e5227ad63aa1c9' && user?.company?._id) {
+      filter['company._id'] = user.company._id;
+    }
 
     let offset = (+currentPage - 1) * (+limit);
     let defaultLimit = +limit ? +limit : 10;
@@ -74,6 +84,7 @@ export class JobsService {
       }
     });
   }
+
 
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {

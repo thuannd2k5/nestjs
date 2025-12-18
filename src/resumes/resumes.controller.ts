@@ -21,13 +21,15 @@ export class ResumesController {
   }
 
   @Get()
+  @SkipCheckPermission()
   @ResponseMessage("Fetch all resumes with paginate")
   async findAll(
     @Query("current") current: string,
     @Query("pageSize") pageSize: string,
-    @Query() qs: string
+    @Query() qs: string,
+    @User() user: IUser
   ) {
-    return await this.resumesService.findAll(+current, +pageSize, qs);
+    return await this.resumesService.findAll(+current, +pageSize, qs, user);
   }
 
   @Get(':id')

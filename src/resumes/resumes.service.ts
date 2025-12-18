@@ -39,10 +39,20 @@ export class ResumesService {
     return cv;
   }
 
-  async findAll(currentPage: number, limit: number, qs: string) {
+  async findAll(currentPage: number, limit: number, qs: string, user: IUser) {
     const { filter, sort, projection, population } = aqp(qs);
     delete filter.current;
     delete filter.pageSize;
+
+    const roleId = user?.role?._id?.toString();
+
+    if (roleId !== '692b0ac190e5227ad63aa1c9') {
+      delete filter['companyId'];
+    }
+    // HR → chỉ thấy job công ty mình
+    if (roleId === '692b0ac190e5227ad63aa1c9' && user?.company?._id) {
+      filter['companyId'] = user.company._id;
+    }
 
     let offset = (+currentPage - 1) * (+limit);
     let defaultLimit = +limit ? +limit : 10;
