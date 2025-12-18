@@ -123,7 +123,7 @@ export class ResumesService {
   }
 
 
-  async findResumeByUser(@User() user: IUser) {
+  async findResumeByUser(user: IUser) {
     return await this.resumeModel.find({
       userId: user._id
     })

@@ -51,6 +51,7 @@ export class ResumesController {
   }
 
   @Post('by-user')
+  @SkipCheckPermission()
   @ResponseMessage("Get resume by User")
   async findResumeByUser(@User() user: IUser) {
     return await this.resumesService.findResumeByUser(user);
