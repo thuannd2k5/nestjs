@@ -1,12 +1,11 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateLlmDto } from './dto/create-llm.dto';
-import { UpdateLlmDto } from './dto/update-llm.dto';
 import { GoogleGenAI } from '@google/genai';
 import { ConfigService } from '@nestjs/config';
 import LlmPrompt from './prompts/llm.prompts';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from 'src/companies/schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { Job, JobDocument } from 'src/jobs/schemas/job.schema';
 
 @Injectable()
 export class LlmService {
@@ -17,6 +16,10 @@ export class LlmService {
 
     @InjectModel(Company.name)
     private companyModel: SoftDeleteModel<CompanyDocument>,
+
+    @InjectModel(Job.name)
+    private jobModel: SoftDeleteModel<JobDocument>,
+
   ) {
     const ApiKey = this.configService.get('GEMINI_API_KEY')
     this.genAi = new GoogleGenAI({ apiKey: ApiKey })
@@ -89,15 +92,38 @@ export class LlmService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} llm`;
+  async analyzeJob(job: any) {
+    const response = await this.genAi.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: LlmPrompt.AnalyzeJob(job),
+    });
+
+    const text =
+      response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    return this.extractJSON(text);
   }
 
-  update(id: number, updateLlmDto: UpdateLlmDto) {
-    return `This action updates a #${id} llm`;
+  async analyzeJobById(id: string) {
+    const job = await this.jobModel.findById(id);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    return {
+      jobId: job._id,
+      ai_analysis: await this.analyzeJob({
+        name: job.name,
+        description: job.description,
+        skills: job.skills,
+        salary: job.salary,
+        location: job.location,
+        level: job.level,
+        company: job.company,
+      }),
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} llm`;
-  }
+
 }

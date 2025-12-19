@@ -1,8 +1,8 @@
 export default class LlmPrompt {
-    constructor() { }
+  constructor() { }
 
-    static AnalyzeCompany(company: any) {
-        return `
+  static AnalyzeCompany(company: any) {
+    return `
 Bạn là một chuyên gia phân tích và đánh giá độ tin cậy doanh nghiệp.
 
 Nhiệm vụ của bạn là đánh giá xem một công ty có khả năng thuộc nhóm nào sau đây:
@@ -40,12 +40,11 @@ LƯU Ý:
 DỮ LIỆU CÔNG TY:
 ${JSON.stringify(company)}
 `;
-    }
+  }
 
 
-
-    static PostAdvices = (captions: string[]) => {
-        return `
+  static PostAdvices = (captions: string[]) => {
+    return `
 Bạn là một nhà gợi ý tài năng...
 
 <format>
@@ -61,10 +60,60 @@ Bạn là một nhà gợi ý tài năng...
 
 <provision>
 ${JSON.stringify({
-            captions: captions.map(c => ({ caption: c }))
-        })}
+      captions: captions.map(c => ({ caption: c }))
+    })}
 </provision>
 `;
-    };
+  };
+
+
+  static AnalyzeJob(job: any) {
+    return `
+Bạn là một chuyên gia phân tích việc làm và tuyển dụng.
+
+Nhiệm vụ của bạn là phân tích thông tin một công việc và đánh giá các nội dung sau:
+1. Công việc có hợp lý hay không
+2. Công việc có dấu hiệu lừa đảo hay rủi ro hay không
+3. Công việc phù hợp với những đối tượng nào
+4. Những kỹ năng cần có để ứng tuyển
+5. Công việc có yêu cầu ngoại ngữ hay không
+
+QUY TẮC BẮT BUỘC:
+- KHÔNG đưa ra kết luận pháp lý
+- CHỈ đánh giá mức độ hợp lý và rủi ro dựa trên dữ liệu được cung cấp
+- CHỈ trả về JSON hợp lệ
+- KHÔNG giải thích ngoài JSON
+- KHÔNG sử dụng markdown
+
+TIÊU CHÍ ĐÁNH GIÁ:
+- Mức độ rõ ràng của tiêu đề và mô tả công việc
+- Tính hợp lý giữa yêu cầu, quyền lợi và mức lương (nếu có)
+- Các dấu hiệu thường gặp của công việc lừa đảo (mô tả mơ hồ, thu phí, hứa hẹn thu nhập bất thường, thiếu thông tin công ty)
+- Mức độ phù hợp với các nhóm ứng viên khác nhau
+- Yêu cầu kỹ năng và ngoại ngữ
+
+FORMAT TRẢ VỀ (BẮT BUỘC):
+{
+  "job_legitimacy": "hợp lý | đáng ngờ | rủi ro cao",
+  "confidence": number,
+  "risk_reasons": string[],
+  "suitable_for": string[],
+  "required_skills": string[],
+  "language_requirement": {
+    "required": boolean,
+    "languages": string[]
+  },
+  "recommendations": string[]
+}
+
+LƯU Ý:
+- confidence là mức độ tự tin của đánh giá (0–100)
+- Nếu dữ liệu thiếu hoặc không rõ ràng, KHÔNG được trả về confidence = 100
+
+DỮ LIỆU CÔNG VIỆC:
+${JSON.stringify(job)}
+`;
+  }
+
 
 }
