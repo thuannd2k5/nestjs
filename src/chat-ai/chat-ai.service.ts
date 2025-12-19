@@ -132,4 +132,31 @@ export class ChatAiService {
     return aiResult;
   }
 
+  // Lấy lịch sử chat của user
+  async getUserChatHistory(user: {
+    _id: Types.ObjectId;
+  }) {
+    // Lấy conversation đang ACTIVE
+    const conversation = await this.conversationModel.findOne({
+      userId: user._id,
+      status: 'ACTIVE',
+      type: 'CAREER_ADVISOR',
+    });
+
+    if (!conversation) return [];
+
+    // Lấy messages
+    const messages = await this.messageModel
+      .find({ conversationId: conversation._id })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    // Map cho frontend
+    return messages.map(m => ({
+      role: m.role,
+      content: m.content,
+      createdAt: m.createdAt,
+    }));
+  }
+
 }

@@ -16,4 +16,12 @@ export class ChatAiController {
     return this.chatAiService.sendMessage(user, body.message);
   }
 
+
+  @Get('history')
+  @SkipCheckPermission()
+  async getHistory(@User() user) {
+    return await this.chatAiService.getUserChatHistory(user);
+  }
+
+
 }
