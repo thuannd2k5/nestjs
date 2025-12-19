@@ -17,6 +17,7 @@ import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LlmModule } from './llm/llm.module';
+import { ChatAiModule } from './chat-ai/chat-ai.module';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { LlmModule } from './llm/llm.module';
     DatabasesModule,
     SubscribersModule,
     MailModule,
-    LlmModule
+    LlmModule,
+    ChatAiModule
   ],
   controllers: [AppController],
   providers: [AppService],

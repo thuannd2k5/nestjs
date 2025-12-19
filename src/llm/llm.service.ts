@@ -125,5 +125,39 @@ export class LlmService {
     };
   }
 
+  async careerChat(
+    history: any[],
+    userMessage: string,
+    context?: any,
+  ) {
+    try {
+      const response = await this.genAi.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: LlmPrompt.CareerChatBot(
+          history,
+          userMessage,
+          context,
+        ),
+      });
+
+      const text =
+        response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      return this.extractJSON(text);
+
+    } catch (error: any) {
+      if (error?.error?.code === 503) {
+        return {
+          reply:
+            'Hiện tại hệ thống đang quá tải, bạn vui lòng thử lại sau ít phút.',
+          analysis: ['AI provider overloaded'],
+          follow_up_questions: [],
+        };
+      }
+
+      throw error;
+    }
+  }
+
 
 }

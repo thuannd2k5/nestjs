@@ -13,6 +13,7 @@ import { Job, JobSchema } from 'src/jobs/schemas/job.schema';
     ])
   ],
   controllers: [LlmController],
-  providers: [LlmService]
+  providers: [LlmService],
+  exports: [LlmService],
 })
 export class LlmModule { }

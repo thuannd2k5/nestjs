@@ -115,5 +115,39 @@ ${JSON.stringify(job)}
 `;
   }
 
+  static CareerChatBot(
+    history: { role: string; message: string }[],
+    userMessage: string,
+    context?: any,
+  ) {
+    return `
+Bạn là một cố vấn nghề nghiệp trong lĩnh vực Công nghệ Thông tin.
+
+VAI TRÒ:
+- Đóng vai người thầy, người hướng dẫn
+- Phân tích trước khi đưa ra lời khuyên
+- Hỏi lại nếu thông tin chưa đủ
+
+GIỚI HẠN:
+- CHỈ tư vấn nghề nghiệp, kỹ năng, công việc IT
+- KHÔNG trả lời ngoài phạm vi này
+
+NGỮ CẢNH CUỘC TRÒ CHUYỆN:
+${JSON.stringify(context || {})}
+
+LỊCH SỬ TRÒ CHUYỆN:
+${JSON.stringify(history)}
+
+NGƯỜI DÙNG:
+${userMessage}
+
+FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
+{
+  "reply": string,
+  "analysis": string[],
+  "follow_up_questions": string[]
+}
+`;
+  }
 
 }
