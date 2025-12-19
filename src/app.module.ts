@@ -16,6 +16,7 @@ import { DatabasesModule } from './databases/databases.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LlmModule } from './llm/llm.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     RolesModule,
     DatabasesModule,
     SubscribersModule,
-    MailModule
+    MailModule,
+    LlmModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,103 @@
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CreateLlmDto } from './dto/create-llm.dto';
+import { UpdateLlmDto } from './dto/update-llm.dto';
+import { GoogleGenAI } from '@google/genai';
+import { ConfigService } from '@nestjs/config';
+import LlmPrompt from './prompts/llm.prompts';
+import { InjectModel } from '@nestjs/mongoose';
+import { Company, CompanyDocument } from 'src/companies/schemas/company.schema';
+import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+
+@Injectable()
+export class LlmService {
+  private readonly logger = new Logger(LlmService.name)
+  private genAi: GoogleGenAI;
+  constructor(
+    private configService: ConfigService,
+
+    @InjectModel(Company.name)
+    private companyModel: SoftDeleteModel<CompanyDocument>,
+  ) {
+    const ApiKey = this.configService.get('GEMINI_API_KEY')
+    this.genAi = new GoogleGenAI({ apiKey: ApiKey })
+  }
+
+  private extractJSON(str: any): any | null {
+    try {
+      // Tìm vị trí dấu ngoặc nhọn đầu tiên và cuối cùng trong chuỗi
+      const start = str.indexOf('{');
+      const end = str.lastIndexOf('}');
+      if (start === -1 || end === -1) return null;
+
+      // Lấy chuỗi JSON con
+      const jsonString = str.substring(start, end + 1);
+
+      // Parse JSON ra object
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error('Lỗi khi parse JSON:', error);
+      return null;
+    }
+  }
+
+
+  getPostAdvices = async (captions: string[]) => {
+    if (!Array.isArray(captions) || captions.length === 0) {
+      throw new Error('captions must be a non-empty array');
+    }
+
+    const response = await this.genAi.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: LlmPrompt.PostAdvices(captions),
+    });
+
+    const responseText =
+      response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    return this.extractJSON(responseText);
+  };
+
+  async analyzeCompany(company: any) {
+    const response = await this.genAi.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: LlmPrompt.AnalyzeCompany(company),
+    });
+
+    const text =
+      response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    return this.extractJSON(text);
+  }
+
+
+  async verifyCompany(id: string) {
+    const company = await this.companyModel.findById(id);
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    const aiResult = await this.analyzeCompany({
+      name: company.name,
+      address: company.address,
+      description: company.description,
+    });
+
+    return {
+      companyId: company.id,
+      ai_verification: aiResult,
+    };
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} llm`;
+  }
+
+  update(id: number, updateLlmDto: UpdateLlmDto) {
+    return `This action updates a #${id} llm`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} llm`;
+  }
+}
