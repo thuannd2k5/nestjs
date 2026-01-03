@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Company, CompanyDocument } from 'src/companies/schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Job, JobDocument } from 'src/jobs/schemas/job.schema';
+import { MOCK_GENERATED_JOB } from './job-generate.mock';
 
 @Injectable()
 export class LlmService {
@@ -125,6 +126,7 @@ export class LlmService {
     };
   }
 
+
   async careerChat(
     history: any[],
     userMessage: string,
@@ -159,5 +161,24 @@ export class LlmService {
     }
   }
 
+
+  // Viết JD dựa trên input từ HR
+  async generateJobByAi(jobInput: any) {
+
+    if (this.configService.get('MOCK_AI') === 'true') {
+      this.logger.warn('⚠ Using MOCK AI for job generation');
+      return MOCK_GENERATED_JOB;
+    }
+
+    const response = await this.genAi.models.generateContent({
+      model: 'gemini-2.0-flash', // nhẹ, ổn định
+      contents: LlmPrompt.GenerateJobDescription(jobInput),
+    });
+
+    const text =
+      response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    return this.extractJSON(text);
+  }
 
 }

@@ -150,4 +150,40 @@ FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
 `;
   }
 
+
+  static GenerateJobDescription(jobInput: any) {
+    return `
+Bạn là một chuyên gia tuyển dụng IT với nhiều năm kinh nghiệm.
+
+NHIỆM VỤ:
+- Dựa trên thông tin HR cung cấp
+- Viết mô tả công việc (Job Description) CHUYÊN NGHIỆP, RÕ RÀNG
+- Phù hợp thị trường tuyển dụng IT Việt Nam
+
+YÊU CẦU:
+- Không bịa thông tin
+- Nếu thiếu thông tin, suy luận hợp lý nhưng KHÔNG phóng đại
+- Ngôn ngữ rõ ràng, dễ hiểu, đúng chuẩn JD
+- Có thể viết dài ra , càng dài càng chi tiết thì càng tốt
+FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
+{
+  "name": string,
+  "skills": string[],
+  "location": string,
+  "salary": string,
+  "quantity": number,
+  "level": string,
+  "workingType": string,
+  "description": string,
+  "requirements": string[],
+  "benefits": string[],
+  "startDate": string,
+  "endDate": string
+}
+
+THÔNG TIN HR CUNG CẤP:
+${JSON.stringify(jobInput)}
+`;
+  }
+
 }
