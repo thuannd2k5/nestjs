@@ -7,6 +7,10 @@ import { Company, CompanyDocument } from 'src/companies/schemas/company.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Job, JobDocument } from 'src/jobs/schemas/job.schema';
 import { MOCK_GENERATED_JOB } from './job-generate.mock';
+import { MOCK_COMPANY_VERIFICATION } from './mock/company-analyze.mock';
+import { MOCK_JOB_ANALYSIS } from './mock/job-analyze.mock';
+import { MOCK_CAREER_CHAT } from './mock/career-chat.mock';
+import { MOCK_POST_ADVICES } from './mock/post-advices.mock';
 
 @Injectable()
 export class LlmService {
@@ -46,6 +50,11 @@ export class LlmService {
 
 
   getPostAdvices = async (captions: string[]) => {
+    if (this.configService.get('MOCK_AI') === 'true') {
+      this.logger.warn('⚠ Using MOCK AI for post advices');
+      return MOCK_POST_ADVICES;
+    }
+
     if (!Array.isArray(captions) || captions.length === 0) {
       throw new Error('captions must be a non-empty array');
     }
@@ -62,6 +71,10 @@ export class LlmService {
   };
 
   async analyzeCompany(company: any) {
+    if (this.configService.get('MOCK_AI') === 'true') {
+      this.logger.warn('⚠ Using MOCK AI for company verification');
+      return MOCK_COMPANY_VERIFICATION;
+    }
     const response = await this.genAi.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: LlmPrompt.AnalyzeCompany(company),
@@ -94,6 +107,10 @@ export class LlmService {
   }
 
   async analyzeJob(job: any) {
+    if (this.configService.get('MOCK_AI') === 'true') {
+      this.logger.warn('⚠ Using MOCK AI for job analysis');
+      return MOCK_JOB_ANALYSIS;
+    }
     const response = await this.genAi.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: LlmPrompt.AnalyzeJob(job),
@@ -133,6 +150,12 @@ export class LlmService {
     context?: any,
   ) {
     try {
+
+      if (this.configService.get('MOCK_AI') === 'true') {
+        this.logger.warn('⚠ Using MOCK AI for career chat');
+        return MOCK_CAREER_CHAT;
+      }
+
       const response = await this.genAi.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: LlmPrompt.CareerChatBot(
