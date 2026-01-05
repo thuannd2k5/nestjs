@@ -153,33 +153,55 @@ FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
 
   static GenerateJobDescription(jobInput: any) {
     return `
-Bạn là một chuyên gia tuyển dụng IT với nhiều năm kinh nghiệm.
+Bạn là một chuyên gia tuyển dụng và copywriter chuyên viết mô tả công việc (Job Description) chuyên nghiệp.
 
-NHIỆM VỤ:
-- Dựa trên thông tin HR cung cấp
-- Viết mô tả công việc (Job Description) CHUYÊN NGHIỆP, RÕ RÀNG
-- Phù hợp thị trường tuyển dụng IT Việt Nam
+Dựa trên các thông tin công việc được cung cấp bên dưới, hãy viết một bản mô tả công việc CHI TIẾT bằng TIẾNG VIỆT với các yêu cầu sau:
 
-YÊU CẦU:
-- Không bịa thông tin
-- Nếu thiếu thông tin, suy luận hợp lý nhưng KHÔNG phóng đại
-- Ngôn ngữ rõ ràng, dễ hiểu, đúng chuẩn JD
-- Có thể viết dài ra , càng dài càng chi tiết thì càng tốt
-FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
-{
-  "name": string,
-  "skills": string[],
-  "location": string,
-  "salary": string,
-  "quantity": number,
-  "level": string,
-  "workingType": string,
-  "description": string,
-  "requirements": string[],
-  "benefits": string[],
-  "startDate": string,
-  "endDate": string
-}
+YÊU CẦU ĐỊNH DẠNG & NỘI DUNG:
+- Văn phong chuyên nghiệp, thu hút ứng viên IT
+- Trình bày rõ ràng theo từng MỤC
+- Các ý chính phải được gạch đầu dòng
+- Không viết thành một đoạn văn dài
+- Có layout đẹp, dễ đọc
+- Có thể xen kẽ tiêu đề tiếng Anh (nếu phù hợp) nhưng nội dung chính là tiếng Việt
+
+BẢN MÔ TẢ CẦN CÓ CÁC PHẦN SAU (theo đúng thứ tự):
+
+1. 🔥 3 lý do để gia nhập công ty
+   - Viết ngắn gọn, súc tích
+   - Mỗi ý 1 dòng
+
+2. 🧩 Mô tả công việc (Job Description)
+   - Mô tả vai trò, trách nhiệm chính
+   - Công nghệ, môi trường làm việc
+   - Quy mô team, cách phối hợp
+
+3. 🏢 Giới thiệu về công ty
+   - Tổng quan về công ty dựa trên tên công ty và lĩnh vực
+   - Văn hóa, giá trị cốt lõi
+   - Thị trường/khách hàng (có thể giả định hợp lý nếu thiếu dữ liệu)
+
+4. 🎯 Yêu cầu công việc
+   Chia thành 2 nhóm:
+   - Yêu cầu chuyên môn (Technical Requirements)
+   - Yêu cầu về kỹ năng & tính cách (Soft Skills / Personality)
+
+5. 🎁 Quyền lợi (Benefits)
+   - Lương, thưởng
+   - Môi trường làm việc
+   - Chính sách làm việc linh hoạt
+   - Các phúc lợi khác
+
+6. 📌 Thông tin chung
+   - Địa điểm làm việc
+   - Cấp bậc
+   - Mức lương
+   - Số lượng tuyển
+
+⚠️ LƯU Ý:
+- Không nhắc lại dữ liệu thô
+- Không dùng markdown code block trong kết quả
+- Không giải thích, chỉ trả về nội dung mô tả công việc hoàn chỉnh
 
 THÔNG TIN HR CUNG CẤP:
 ${JSON.stringify(jobInput)}

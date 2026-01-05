@@ -47,6 +47,7 @@ export class ChatAiService {
       });
     }
 
+
     return conversation;
   }
 
@@ -104,8 +105,8 @@ export class ChatAiService {
       conversation._id.toString(),
     );
 
-    // Gọi AI
-    let aiResult;
+    // gọi AI
+    let aiResult: any;
 
     try {
       aiResult = await this.llmService.careerChat(
@@ -113,21 +114,23 @@ export class ChatAiService {
         content,
         conversation.context,
       );
-    } catch (error) {
-      aiResult = {
-        reply: 'Hiện hệ thống đang quá tải, bạn vui lòng thử lại sau.',
-        analysis: [],
-        follow_up_questions: [],
-      };
+      console.log('AI RESULT:', aiResult);
+    } catch {
+      aiResult = null;
     }
 
+    // fallback bắt buộc
+    const reply =
+      typeof aiResult?.reply === 'string' && aiResult.reply.trim()
+        ? aiResult.reply
+        : 'Xin lỗi, hiện AI chưa thể phản hồi câu hỏi này.';
 
-    // Lưu message AI
     await this.messageModel.create({
       conversationId: conversation._id,
       role: 'assistant',
-      content: aiResult.reply,
+      content: reply,
     });
+
 
     return aiResult;
   }

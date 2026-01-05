@@ -194,7 +194,7 @@ export class LlmService {
     }
 
     const response = await this.genAi.models.generateContent({
-      model: 'gemini-2.0-flash', // nhẹ, ổn định
+      model: 'gemini-2.5-flash',
       contents: LlmPrompt.GenerateJobDescription(jobInput),
     });
 
