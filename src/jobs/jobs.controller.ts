@@ -56,4 +56,13 @@ export class JobsController {
   ) {
     return this.jobsService.remove(id, user);
   }
+
+
+  @Post('by-ids')
+  async getJobsByIds(@Body('ids') ids: string[]) {
+    return this.jobsService.findByIds(ids);
+  }
+
+
 }
+

@@ -98,4 +98,13 @@ export class JobsService {
     })
     return this.jobModel.softDelete({ _id: id });
   }
+
+
+
+  async findByIds(ids: string[]) {
+    return this.jobModel.find({
+      _id: { $in: ids },
+    });
+  }
+
 }

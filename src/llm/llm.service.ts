@@ -156,12 +156,14 @@ export class LlmService {
         return MOCK_CAREER_CHAT;
       }
 
+      const enrichedContext = await this.buildCareerChatContext(context);
+
       const response = await this.genAi.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: LlmPrompt.CareerChatBot(
           history,
           userMessage,
-          context,
+          enrichedContext,
         ),
       });
 
@@ -182,6 +184,26 @@ export class LlmService {
 
       throw error;
     }
+  }
+
+  private async buildCareerChatContext(conversationContext: any) {
+    // Lấy job đang active
+    const jobs = await this.jobModel
+      .find({ isDeleted: false })
+      .select('_id name skills level location')
+      .limit(30) // 🔥 giới hạn để không quá token
+      .lean();
+
+    return {
+      ...conversationContext,
+      jobs: jobs.map(job => ({
+        id: job._id.toString(),
+        name: job.name,
+        skills: job.skills,
+        level: job.level,
+        location: job.location,
+      })),
+    };
   }
 
 
