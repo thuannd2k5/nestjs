@@ -5,37 +5,31 @@ export default class LlmPrompt {
     return `
 Bạn là một chuyên gia phân tích và đánh giá độ tin cậy doanh nghiệp.
 
-Nhiệm vụ của bạn là đánh giá xem một công ty có khả năng thuộc nhóm nào sau đây:
-- legitimate (đáng tin cậy)
-- suspicious (đáng ngờ)
-- likely_fake (có nhiều dấu hiệu rủi ro)
+NHIỆM VỤ:
+- Đánh giá mức độ rủi ro của công ty dựa trên dữ liệu được cung cấp
+- Phân tích chi tiết, khách quan, không suy đoán pháp lý
 
 QUY TẮC BẮT BUỘC:
 - KHÔNG đưa ra kết luận pháp lý
-- CHỈ đánh giá mức độ rủi ro dựa trên dữ liệu được cung cấp
+- KHÔNG sử dụng markdown
 - CHỈ trả về JSON hợp lệ
 - KHÔNG giải thích ngoài JSON
-- KHÔNG sử dụng markdown
 
-TIÊU CHÍ ĐÁNH GIÁ:
-- Mức độ đầy đủ của thông tin công ty
-- Tính chuyên nghiệp của mô tả doanh nghiệp
-- Sự hiện diện của website / email / số điện thoại
-- Tính nhất quán của dữ liệu
-- Các dấu hiệu thường gặp của công ty giả mạo
+YÊU CẦU CHI TIẾT:
+- verdict phản ánh mức độ rủi ro tổng thể
+- confidence từ 0–100 (không được là 100 nếu dữ liệu thiếu)
+- reasons: ít nhất 3 lý do tích cực
+- red_flags: ít nhất 2 dấu hiệu rủi ro (nếu có)
+- recommendations: ít nhất 3 khuyến nghị thực tế
 
-FORMAT TRẢ VỀ (BẮT BUỘC):
+FORMAT TRẢ VỀ:
 {
   "verdict": "legitimate | suspicious | likely_fake",
-  "confidence": number, 
+  "confidence": number,
   "reasons": string[],
   "red_flags": string[],
   "recommendations": string[]
 }
-
-LƯU Ý:
-- confidence là mức độ tự tin của đánh giá (0–100)
-- Nếu dữ liệu thiếu hoặc không rõ ràng, KHÔNG được trả về confidence = 100
 
 DỮ LIỆU CÔNG TY:
 ${JSON.stringify(company)}
@@ -43,62 +37,61 @@ ${JSON.stringify(company)}
   }
 
 
+
   static PostAdvices = (captions: string[]) => {
     return `
-Bạn là một nhà gợi ý tài năng...
+Bạn là một chuyên gia gợi ý câu hỏi thảo luận.
 
-<format>
+NHIỆM VỤ:
+- Dựa trên các caption được cung cấp
+- Gợi ý các câu hỏi phù hợp để trao đổi, phỏng vấn hoặc thảo luận
+
+FORMAT TRẢ VỀ (JSON THUẦN):
 {
-  "questions": [
-    [
-      {"question":"question1"},
-      {"question":"question2"}
-    ]
-  ]
+  "questions": string[][]
 }
-</format>
 
-<provision>
-${JSON.stringify({
-      captions: captions.map(c => ({ caption: c }))
-    })}
-</provision>
+YÊU CẦU:
+- Mỗi caption tạo ít nhất 2 câu hỏi
+- Câu hỏi rõ ràng, ngắn gọn
+
+DỮ LIỆU:
+${JSON.stringify(captions)}
 `;
   };
 
 
+
   static AnalyzeJob(job: any) {
     return `
-Bạn là một chuyên gia phân tích việc làm và tuyển dụng.
+Bạn là một chuyên gia phân tích việc làm IT.
 
-Nhiệm vụ của bạn là phân tích thông tin một công việc và đánh giá các nội dung sau:
-1. Công việc có hợp lý hay không
-2. Công việc có dấu hiệu lừa đảo hay rủi ro hay không
-3. Công việc phù hợp với những đối tượng nào
-4. Những kỹ năng cần có để ứng tuyển
-5. Công việc có yêu cầu ngoại ngữ hay không
+NHIỆM VỤ:
+- Đánh giá mức độ hợp lý và rủi ro của công việc
+- Phân tích rõ ràng cho ứng viên hiểu
 
-QUY TẮC BẮT BUỘC:
-- KHÔNG đưa ra kết luận pháp lý
-- CHỈ đánh giá mức độ hợp lý và rủi ro dựa trên dữ liệu được cung cấp
-- CHỈ trả về JSON hợp lệ
-- KHÔNG giải thích ngoài JSON
-- KHÔNG sử dụng markdown
+QUY TẮC:
+- KHÔNG kết luận pháp lý
+- KHÔNG markdown
+- CHỈ JSON hợp lệ
 
-TIÊU CHÍ ĐÁNH GIÁ:
-- Mức độ rõ ràng của tiêu đề và mô tả công việc
-- Tính hợp lý giữa yêu cầu, quyền lợi và mức lương (nếu có)
-- Các dấu hiệu thường gặp của công việc lừa đảo (mô tả mơ hồ, thu phí, hứa hẹn thu nhập bất thường, thiếu thông tin công ty)
-- Mức độ phù hợp với các nhóm ứng viên khác nhau
-- Yêu cầu kỹ năng và ngoại ngữ
+YÊU CẦU PHÂN TÍCH:
+- job_legitimacy phản ánh tổng thể
+- risk_reasons: ít nhất 3 ý
+- suitable_for: mô tả theo cấp độ, định hướng
+- required_skills chia rõ hard / soft
+- language_requirement chỉ true nếu có dấu hiệu rõ
 
-FORMAT TRẢ VỀ (BẮT BUỘC):
+FORMAT:
 {
   "job_legitimacy": "hợp lý | đáng ngờ | rủi ro cao",
   "confidence": number,
   "risk_reasons": string[],
   "suitable_for": string[],
-  "required_skills": string[],
+  "required_skills": {
+    "hard_skills": string[],
+    "soft_skills": string[]
+  },
   "language_requirement": {
     "required": boolean,
     "languages": string[]
@@ -106,14 +99,11 @@ FORMAT TRẢ VỀ (BẮT BUỘC):
   "recommendations": string[]
 }
 
-LƯU Ý:
-- confidence là mức độ tự tin của đánh giá (0–100)
-- Nếu dữ liệu thiếu hoặc không rõ ràng, KHÔNG được trả về confidence = 100
-
 DỮ LIỆU CÔNG VIỆC:
 ${JSON.stringify(job)}
 `;
   }
+
 
   static CareerChatBot(
     history: { role: string; message: string }[],
@@ -121,27 +111,28 @@ ${JSON.stringify(job)}
     context?: any,
   ) {
     return `
-Bạn là một cố vấn nghề nghiệp trong lĩnh vực Công nghệ Thông tin.
+Bạn là một cố vấn nghề nghiệp IT giàu kinh nghiệm.
 
 VAI TRÒ:
-- Đóng vai người thầy, người hướng dẫn
-- Phân tích trước khi đưa ra lời khuyên
-- Hỏi lại nếu thông tin chưa đủ
+- Phân tích kỹ năng, định hướng nghề nghiệp
+- Đưa lời khuyên rõ ràng, thực tế
+- Hỏi ngược lại để hiểu người dùng sâu hơn
 
-GIỚI HẠN:
-- CHỈ tư vấn nghề nghiệp, kỹ năng, công việc IT
-- KHÔNG trả lời ngoài phạm vi này
+NGUYÊN TẮC:
+- Chỉ tư vấn lĩnh vực IT
+- Phân tích trước khi trả lời
+- follow_up_questions >= 2 câu
 
-NGỮ CẢNH CUỘC TRÒ CHUYỆN:
+NGỮ CẢNH:
 ${JSON.stringify(context || {})}
 
-LỊCH SỬ TRÒ CHUYỆN:
+LỊCH SỬ:
 ${JSON.stringify(history)}
 
 NGƯỜI DÙNG:
 ${userMessage}
 
-FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
+FORMAT:
 {
   "reply": string,
   "analysis": string[],
@@ -150,62 +141,51 @@ FORMAT TRẢ VỀ (JSON, KHÔNG markdown):
 `;
   }
 
-
   static GenerateJobDescription(jobInput: any) {
     return `
-Bạn là một chuyên gia tuyển dụng và copywriter chuyên viết mô tả công việc (Job Description) chuyên nghiệp.
+Bạn là một chuyên gia tuyển dụng IT và copywriter.
 
-Dựa trên các thông tin công việc được cung cấp bên dưới, hãy viết một bản mô tả công việc CHI TIẾT bằng TIẾNG VIỆT với các yêu cầu sau:
+NHIỆM VỤ:
+- Viết JD CHI TIẾT, CHUYÊN NGHIỆP, THU HÚT
+- Phù hợp thị trường tuyển dụng IT Việt Nam
 
-YÊU CẦU ĐỊNH DẠNG & NỘI DUNG:
-- Văn phong chuyên nghiệp, thu hút ứng viên IT
-- Trình bày rõ ràng theo từng MỤC
-- Các ý chính phải được gạch đầu dòng
-- Không viết thành một đoạn văn dài
-- Có layout đẹp, dễ đọc
-- Có thể xen kẽ tiêu đề tiếng Anh (nếu phù hợp) nhưng nội dung chính là tiếng Việt
+YÊU CẦU:
+- KHÔNG bịa thông tin
+- Văn phong chuyên nghiệp
+- Layout rõ ràng, dễ đọc
+- description tối thiểu 300–500 từ
+- Mỗi mục có ít nhất 3 gạch đầu dòng
 
-BẢN MÔ TẢ CẦN CÓ CÁC PHẦN SAU (theo đúng thứ tự):
+FORMAT (JSON THUẦN):
+{
+  "name": string,
+  "skills": string[],
+  "location": string,
+  "salary": string,
+  "quantity": number,
+  "level": string,
+  "workingType": string,
+  "description": string,
+  "requirements": string[],
+  "benefits": string[],
+  "startDate": string,
+  "endDate": string
+}
 
-1. 🔥 3 lý do để gia nhập công ty
-   - Viết ngắn gọn, súc tích
-   - Mỗi ý 1 dòng
+QUY ƯỚC DESCRIPTION:
+- Bao gồm:
+  + 3 lý do gia nhập công ty
+  + Mô tả công việc
+  + Giới thiệu công ty
+  + Yêu cầu
+  + Quyền lợi
+- Dùng xuống dòng và dấu "-" hoặc "•"
 
-2. 🧩 Mô tả công việc (Job Description)
-   - Mô tả vai trò, trách nhiệm chính
-   - Công nghệ, môi trường làm việc
-   - Quy mô team, cách phối hợp
-
-3. 🏢 Giới thiệu về công ty
-   - Tổng quan về công ty dựa trên tên công ty và lĩnh vực
-   - Văn hóa, giá trị cốt lõi
-   - Thị trường/khách hàng (có thể giả định hợp lý nếu thiếu dữ liệu)
-
-4. 🎯 Yêu cầu công việc
-   Chia thành 2 nhóm:
-   - Yêu cầu chuyên môn (Technical Requirements)
-   - Yêu cầu về kỹ năng & tính cách (Soft Skills / Personality)
-
-5. 🎁 Quyền lợi (Benefits)
-   - Lương, thưởng
-   - Môi trường làm việc
-   - Chính sách làm việc linh hoạt
-   - Các phúc lợi khác
-
-6. 📌 Thông tin chung
-   - Địa điểm làm việc
-   - Cấp bậc
-   - Mức lương
-   - Số lượng tuyển
-
-⚠️ LƯU Ý:
-- Không nhắc lại dữ liệu thô
-- Không dùng markdown code block trong kết quả
-- Không giải thích, chỉ trả về nội dung mô tả công việc hoàn chỉnh
-
-THÔNG TIN HR CUNG CẤP:
+THÔNG TIN HR:
 ${JSON.stringify(jobInput)}
 `;
   }
+
+
 
 }
