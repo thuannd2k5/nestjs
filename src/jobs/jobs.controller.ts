@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { Public, ResponseMessage, SkipCheckPermission, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('jobs')
 export class JobsController {
@@ -33,6 +34,8 @@ export class JobsController {
 
   @Get(':id')
   @Public()
+  @UseGuards(ThrottlerGuard)
+  @Throttle(3, 60)
   @ResponseMessage("Fetch a job by id")
   findOne(@Param('id') id: string) {
     return this.jobsService.findOne(id);

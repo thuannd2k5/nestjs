@@ -18,10 +18,15 @@ import { MailModule } from './mail/mail.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LlmModule } from './llm/llm.module';
 import { ChatAiModule } from './chat-ai/chat-ai.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 5,
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
