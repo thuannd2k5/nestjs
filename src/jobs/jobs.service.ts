@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IUser } from 'src/users/users.interface';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { HR_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class JobsService {
@@ -32,13 +33,13 @@ export class JobsService {
     delete filter.current;
     delete filter.pageSize;
 
-    const roleId = user?.role?._id?.toString();
+    const roleName = user?.role?.name;
 
-    if (roleId !== '692b0ac190e5227ad63aa1c9') {
+    if (roleName !== HR_ROLE) {
       delete filter['company._id'];
     }
     // HR → chỉ thấy job công ty mình
-    if (roleId === '692b0ac190e5227ad63aa1c9' && user?.company?._id) {
+    if (roleName === HR_ROLE && user?.company?._id) {
       filter['company._id'] = user.company._id;
     }
 
