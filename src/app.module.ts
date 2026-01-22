@@ -19,6 +19,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { LlmModule } from './llm/llm.module';
 import { ChatAiModule } from './chat-ai/chat-ai.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -53,7 +54,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
     SubscribersModule,
     MailModule,
     LlmModule,
-    ChatAiModule
+    ChatAiModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],
