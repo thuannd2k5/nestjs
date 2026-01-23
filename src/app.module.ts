@@ -41,6 +41,7 @@ import { HealthModule } from './health/health.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     UsersModule,
     AuthModule,
